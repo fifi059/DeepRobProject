@@ -8,7 +8,7 @@
   <xacro:macro name="load_arm" params="parent:='' dof vision prefix *origin">
       <link name="${prefix}base_link">
         <inertial>
-          <origin xyz="-0.000648 -0.000166 0.084487" rpy="0 0 0" />
+          <origin xyz="-0.000648 0.000166 0.084487" rpy="0 0 0" />
           <mass value="1.697" />
           <inertia ixx="0.004622" ixy="9E-06" ixz="6E-05" iyy="0.004495" iyz="9E-06" izz="0.002079" />
         </inertial>
@@ -312,6 +312,8 @@
       <axis
         xyz="0 0 0" />
     </joint>
+
+    <!-- Camera -->
     <xacro:if value="${vision}">
       <gazebo reference="bracelet_link">
         <sensor name="robot_camera" type="camera">
@@ -333,6 +335,47 @@
           </plugin>
         </sensor>
       </gazebo>
+
+      <!-- Table -->
+      <gazebo>
+        <include>
+          <uri>model://table</uri> 
+          <pose>0 -0.34 -0.98 0 0 0</pose> 
+        </include>
+      </gazebo> 
+      
+      <!-- Coke Can -->
+      <gazebo>
+        <include>
+          <uri>model://coke_can</uri>
+          <pose>0 -0.37 0.03 0 0 0</pose> 
+        </include>
+      </gazebo>
+
+      <!-- Cricket Ball -->
+      <gazebo>
+        <include>
+          <uri>model://cricket_ball</uri>
+          <pose>-0.35 -0.45 0.04 0 0 0</pose> 
+        </include>
+      </gazebo>
+
+      <!-- Cube -->
+      <gazebo>
+        <include>
+          <uri>model://wood_cube_5cm</uri>
+          <pose>0.28 -0.5 0.04 0 0 0</pose>  
+        </include>
+      </gazebo>
+
+       <!-- Bowl -->
+       <gazebo>
+        <include>
+          <uri>model://bowl</uri>
+          <pose>0 -0.61 0.04 0 0 0</pose> 
+        </include>
+      </gazebo>
+            
     </xacro:if>
   </xacro:macro>
 </robot>
