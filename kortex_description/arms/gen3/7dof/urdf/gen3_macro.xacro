@@ -8,7 +8,8 @@
   <xacro:macro name="load_arm" params="parent:='' dof vision prefix *origin">
       <link name="${prefix}base_link">
         <inertial>
-          <origin xyz="-0.000648 0.000166 0.084487" rpy="0 0 0" />
+          <origin xyz="-0.000648 -0.000166 0.084487" rpy="0 0 0" />
+          <!-- <origin xyz="-0.000648 0.000166 0.084487" rpy="0 0 0" /> -->
           <mass value="1.697" />
           <inertia ixx="0.004622" ixy="9E-06" ixz="6E-05" iyy="0.004495" iyz="9E-06" izz="0.002079" />
         </inertial>
@@ -313,16 +314,36 @@
         xyz="0 0 0" />
     </joint>
 
-    <!-- Camera -->
     <xacro:if value="${vision}">
+      <!-- <link name="${prefix}camera_link" />
+      <joint name="${prefix}camera_module" type="fixed">
+        <origin xyz="0 0.05639 -0.00305" rpy="3.14159265358979 3.14159265358979 0" />
+        <parent link="${prefix}end_effector_link" />
+        <child  link="${prefix}camera_link" />
+      </joint>
+      <link name="${prefix}camera_depth_frame" />
+      <joint name="${prefix}depth_module" type="fixed">
+        <origin xyz="0.0275 0.066 -0.00305" rpy="3.14159265358979 3.14159265358979 0" />
+        <parent link="${prefix}end_effector_link" />
+        <child  link="${prefix}camera_depth_frame" />
+      </joint>
+      <link name="${prefix}camera_color_frame" />
+      <joint name="${prefix}color_module" type="fixed">
+        <origin xyz="0 0.05639 -0.00305" rpy="3.14159265358979 3.14159265358979 0" />
+        <parent link="${prefix}end_effector_link" />
+        <child  link="${prefix}camera_color_frame" />
+      </joint> -->
+
+    <!-- Camera -->
       <gazebo reference="bracelet_link">
         <sensor name="robot_camera" type="camera">
-          <pose>0 -0.05639 -0.05 1.5708  1.5708  1.5708 </pose>
+          <!-- <pose>0 -0.05639 -0.05 1.5708  1.5708  1.5708 </pose> -->
+          <pose>0 -0.05639 -0.05 3.1416  1.5708  1.5708 </pose>
           <camera>
             <horizontal_fov>0.4</horizontal_fov>
             <image>
-              <width>256</width>
-              <height>256</height>
+              <width>64</width>
+              <height>64</height>
             </image>
           </camera>
           <always_on>1</always_on>
@@ -337,44 +358,44 @@
       </gazebo>
 
       <!-- Table -->
-      <gazebo>
+      <!-- <gazebo>
         <include>
           <uri>model://table</uri> 
           <pose>0 -0.34 -0.98 0 0 0</pose> 
         </include>
-      </gazebo> 
+      </gazebo>  -->
       
       <!-- Coke Can -->
-      <gazebo>
+      <!-- <gazebo>
         <include>
           <uri>model://coke_can</uri>
           <pose>0 -0.37 0.03 0 0 0</pose> 
         </include>
-      </gazebo>
+      </gazebo> -->
 
       <!-- Cricket Ball -->
-      <gazebo>
+      <!-- <gazebo>
         <include>
           <uri>model://cricket_ball</uri>
           <pose>-0.35 -0.45 0.04 0 0 0</pose> 
         </include>
-      </gazebo>
+      </gazebo> -->
 
       <!-- Cube -->
-      <gazebo>
+      <!-- <gazebo>
         <include>
           <uri>model://wood_cube_5cm</uri>
           <pose>0.28 -0.5 0.04 0 0 0</pose>  
         </include>
-      </gazebo>
+      </gazebo> -->
 
        <!-- Bowl -->
-       <gazebo>
+       <!-- <gazebo>
         <include>
           <uri>model://bowl</uri>
           <pose>0 -0.61 0.04 0 0 0</pose> 
         </include>
-      </gazebo>
+      </gazebo> -->
             
     </xacro:if>
   </xacro:macro>

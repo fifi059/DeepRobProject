@@ -8,6 +8,7 @@
     
         <!-- Launch Gazebo with an empty world -->
         <include file="$(find gazebo_ros)/launch/empty_world.launch">
+            <arg name="world_name" value="$(find kortex_gazebo)/worlds/gazebo.world"/>
             <arg name="gui" value="$(arg gui)" />
             <arg name="use_sim_time" value="$(arg use_sim_time)"/>
             <arg name="debug" value="$(arg debug)" />
