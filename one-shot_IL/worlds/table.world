@@ -93,19 +93,6 @@
       <real_time>68 371195420</real_time>
       <wall_time>1723308750 403390896</wall_time>
       <iterations>68267</iterations>
-      <model name='ground_plane'>
-        <pose>0 0 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose>0 0 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <light name='sun'>
-        <pose>0 0 10 0 -0 0</pose>
-      </light>
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
@@ -127,6 +114,29 @@
         <pose>0.4 0 1.02 0 0 0</pose> <!-- Adjust position and rotation as needed -->
     </include>
 
+    <!-- Coke Can -->
+    <!-- <include>
+      <uri>model://coke_can</uri>
+      <pose>0 -0.37 0.03 0 0 0</pose> 
+    </include> -->
+
+    <!-- Cricket Ball -->
+    <!-- <include>
+      <uri>model://cricket_ball</uri>
+      <pose>-0.35 -0.45 0.04 0 0 0</pose> 
+    </include> -->
+
+    <!-- Cube -->
+    <!-- <include>
+      <uri>model://wood_cube_5cm</uri>
+      <pose>0.28 -0.5 0.04 0 0 0</pose>  
+    </include> -->
+
+    <!-- Bowl -->
+    <!-- <include>
+      <uri>model://bowl</uri>
+      <pose>0 -0.61 0.04 0 0 0</pose> 
+    </include> -->
 
   </world>
 </sdf>

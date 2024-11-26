@@ -150,23 +150,23 @@ def main():
     rospy.loginfo("Reaching Cartesian Pose...")
     
     actual_pose = example.get_cartesian_pose()
-    # angle_radians = 90 * (pi / 180)
-    # rotation_quat = tf.quaternion_about_axis(angle_radians, (0, 1, 0))
+    angle_radians = 90 * (pi / 180)
+    rotation_quat = tf.quaternion_about_axis(angle_radians, (0, 1, 0))
 
-    # current_quat = [
-    #     actual_pose.orientation.x,
-    #     actual_pose.orientation.y,
-    #     actual_pose.orientation.z,
-    #     actual_pose.orientation.w,
-    # ]
-    # new_orientation = tf.quaternion_multiply(rotation_quat, current_quat)
-    # actual_pose.orientation.x = new_orientation[0]
-    # actual_pose.orientation.y = new_orientation[1]
-    # actual_pose.orientation.z = new_orientation[2]
-    # actual_pose.orientation.w = new_orientation[3]
+    current_quat = [
+        actual_pose.orientation.x,
+        actual_pose.orientation.y,
+        actual_pose.orientation.z,
+        actual_pose.orientation.w,
+    ]
+    new_orientation = tf.quaternion_multiply(rotation_quat, current_quat)
+    actual_pose.orientation.x = new_orientation[0]
+    actual_pose.orientation.y = new_orientation[1]
+    actual_pose.orientation.z = new_orientation[2]
+    actual_pose.orientation.w = new_orientation[3]
 
     # actual_pose.position.x += 0.02
-    actual_pose.position.y -= 0.01
+    # actual_pose.position.y -= 0.01
     success &= example.reach_cartesian_pose(pose=actual_pose, tolerance=0.01, constraints=None)
     print (success)
 

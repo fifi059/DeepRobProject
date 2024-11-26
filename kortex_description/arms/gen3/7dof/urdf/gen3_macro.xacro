@@ -356,46 +356,6 @@
           </plugin>
         </sensor>
       </gazebo>
-
-      <!-- Table -->
-      <!-- <gazebo>
-        <include>
-          <uri>model://table</uri> 
-          <pose>0 -0.34 -0.98 0 0 0</pose> 
-        </include>
-      </gazebo>  -->
-      
-      <!-- Coke Can -->
-      <!-- <gazebo>
-        <include>
-          <uri>model://coke_can</uri>
-          <pose>0 -0.37 0.03 0 0 0</pose> 
-        </include>
-      </gazebo> -->
-
-      <!-- Cricket Ball -->
-      <!-- <gazebo>
-        <include>
-          <uri>model://cricket_ball</uri>
-          <pose>-0.35 -0.45 0.04 0 0 0</pose> 
-        </include>
-      </gazebo> -->
-
-      <!-- Cube -->
-      <!-- <gazebo>
-        <include>
-          <uri>model://wood_cube_5cm</uri>
-          <pose>0.28 -0.5 0.04 0 0 0</pose>  
-        </include>
-      </gazebo> -->
-
-       <!-- Bowl -->
-       <!-- <gazebo>
-        <include>
-          <uri>model://bowl</uri>
-          <pose>0 -0.61 0.04 0 0 0</pose> 
-        </include>
-      </gazebo> -->
             
     </xacro:if>
   </xacro:macro>

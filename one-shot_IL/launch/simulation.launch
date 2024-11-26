@@ -1,0 +1,25 @@
+<launch>
+    <!-- Start Gazebo -->
+    <!-- Gazebo parameters -->
+    <arg name="use_sim_time" default="true"/>
+    <arg name="debug" default="false" />
+    <arg name="gui" default="true" />
+    <arg name="paused" default="true" />
+
+    <!-- Launch Gazebo with an empty world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find one-shot_IL)/worlds/table.world"/>
+        <arg name="gui" value="$(arg gui)" />
+        <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+        <arg name="debug" value="$(arg debug)" />
+        <arg name="paused" value="$(arg paused)"/>
+    </include>
+
+    <!-- Spawn Kortex Robot -->
+    <include file="$(find kortex_gazebo)/launch/spawn_kortex_robot.launch">
+            <arg name="start_gazebo" value="false"/>
+            <arg name="start_rviz" value="true"/>
+            <arg name="robot_name" value="gen3"/>
+            <arg name="gripper" value="robotiq_2f_85"/>
+    </include>
+</launch>
