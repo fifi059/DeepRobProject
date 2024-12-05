@@ -14,7 +14,9 @@ import numpy as np
 class DatasetGenerator:
 
     TOLERENCE = 0.01
-    STEP_SIZE = 0.005
+    KP_XYZ = 0.3
+    KP_R = 0.3
+    MAX_STEP_SIZE = 0.05   # Maximum movement stepsize
 
     def __init__(self, trajectory_name, model_name):
         self.index = 0
@@ -40,34 +42,38 @@ class DatasetGenerator:
         response = self.get_gripper_pose()
         gripper_pose = response.pose
 
-        if (gripper_pose.position.x - model_pose.position.x) > DatasetGenerator.TOLERENCE:
-            ex = -DatasetGenerator.STEP_SIZE
-        elif (gripper_pose.position.x - model_pose.position.x) < -DatasetGenerator.TOLERENCE:
-            ex = DatasetGenerator.STEP_SIZE
+        ex = model_pose.position.x - gripper_pose.position.x
+        if abs(ex) > DatasetGenerator.TOLERENCE:
+            ex *= DatasetGenerator.KP_XYZ
+            if abs(ex) > DatasetGenerator.MAX_STEP_SIZE:
+                ex = DatasetGenerator.MAX_STEP_SIZE
         else:
             ex = 0
-
-        if (gripper_pose.position.y - model_pose.position.y) > DatasetGenerator.TOLERENCE:
-            ey = -DatasetGenerator.STEP_SIZE
-        elif (gripper_pose.position.y - model_pose.position.y) < -DatasetGenerator.TOLERENCE:
-            ey = DatasetGenerator.STEP_SIZE
+        
+        ey = model_pose.position.y - gripper_pose.position.y
+        if abs(ey) > DatasetGenerator.TOLERENCE:
+            ey *= DatasetGenerator.KP_XYZ
+            if abs(ey) > DatasetGenerator.MAX_STEP_SIZE:
+                ey = DatasetGenerator.MAX_STEP_SIZE
         else:
             ey = 0
 
-        if (gripper_pose.position.z - 0.35) > DatasetGenerator.TOLERENCE:
-            ez = -DatasetGenerator.STEP_SIZE
-        elif (gripper_pose.position.z - 0.35) < -DatasetGenerator.TOLERENCE:
-            ez = DatasetGenerator.STEP_SIZE
+        ez = 0.35 - gripper_pose.position.z
+        if abs(ez) > DatasetGenerator.TOLERENCE:
+            ez *= DatasetGenerator.KP_XYZ
+            if abs(ez) > DatasetGenerator.MAX_STEP_SIZE:
+                ez = DatasetGenerator.MAX_STEP_SIZE
         else:
             ez = 0
 
         _, _, gripper_angle = tf.euler_from_quaternion([gripper_pose.orientation.x, gripper_pose.orientation.y, gripper_pose.orientation.z, gripper_pose.orientation.w])
         _, _, model_angle = tf.euler_from_quaternion([model_pose.orientation.x, model_pose.orientation.y, model_pose.orientation.z, model_pose.orientation.w])
 
-        if (gripper_angle - model_angle - 1.5708) > DatasetGenerator.TOLERENCE:
-            er = -DatasetGenerator.STEP_SIZE
-        elif (gripper_angle - model_angle - 1.5708) < -DatasetGenerator.TOLERENCE:
-            er = DatasetGenerator.STEP_SIZE
+        er = model_angle - gripper_angle + 1.5708
+        if abs(er) > DatasetGenerator.TOLERENCE:
+            er *= DatasetGenerator.KP_R
+            if abs(er) > DatasetGenerator.MAX_STEP_SIZE:
+                er = DatasetGenerator.MAX_STEP_SIZE
         else:
             er = 0
         
@@ -77,8 +83,7 @@ class DatasetGenerator:
         
         er_cos = np.cos(er)
         er_sin = np.sin(er)
-        print(gripper_angle - 1.5708, model_angle)
-        print(f'{ex}, {ey}, {ez}, {er}, {er_cos}, {er_sin}')
+        rospy.loginfo(f'ex: {ex}, ey: {ey}, ez: {ez}, er: {er}, er_cos: {er_cos}, er_sin: {er_sin}')
 
         # Move Gripper
         self.move_gripper(ex, ey, ez, er_cos, er_sin)
@@ -102,7 +107,6 @@ class DatasetGenerator:
         displacement.position.z = ez
 
         er = np.arctan2(er_sin, er_cos)
-        print(f'move angle: {er}')
         eq = tf.quaternion_from_euler(0, 0, er)
         displacement.orientation.x = eq[0]
         displacement.orientation.y = eq[1]
@@ -120,12 +124,4 @@ if __name__ == '__main__':
     model_name = 'Threshold_Porcelain_Coffee_Mug_All_Over_Bead_White'
 
     dataset_generator = DatasetGenerator(trajectory_name, model_name)
-
-    # cartesian_pose_pub = rospy.Publisher('pose_displacement', Pose, queue_size=10)
-
-    # new_pose = Pose()
-    # new_pose.position.x = -0.1
-    # print(new_pose)
-    # rospy.sleep(1)
-    # cartesian_pose_pub.publish(new_pose)
     rospy.spin()

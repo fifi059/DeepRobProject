@@ -15,10 +15,17 @@ class ArmController:
     HOME_ACTION_IDENTIFIER = 2
 
     def __init__(self):
+
+        rospy.init_node('arm_controller')
+        
+        # Check if the environment has been initialized
+        gazebo_is_initialized = False
+        while gazebo_is_initialized is False:
+            gazebo_is_initialized = rospy.get_param(rospy.get_namespace() + 'gazebo_is_initialized', False)
+        rospy.loginfo('The environment has been initialized. Begin Initialize Arm Controller!')
         
         # Initialize the node
         moveit_commander.roscpp_initialize(sys.argv)
-        rospy.init_node('arm_controller')
         self.joint_angles_sub = rospy.Subscriber('angle_displacement', Float32MultiArray, self.joint_angles_callback, queue_size=10)
         self.cartesian_pose_sub = rospy.Subscriber('pose_displacement', Pose, self.cartesian_pose_callback, queue_size=10)
         self.cartesian_pose_service = rospy.Service('get_gripper_pose', GetPose, self.handle_get_pose)
@@ -51,6 +58,36 @@ class ArmController:
             self.is_init_success = False
         else:
             self.is_init_success = True
+    
+        # From Home Pose to Pregrasp Pose
+        if self.is_init_success:
+        
+            rospy.loginfo("Reaching Pregrasp Pose...")
+            current_pose = self.get_cartesian_pose()
+            angle_radians = 90 * (pi / 180)
+            rotation_quat = tf.quaternion_about_axis(angle_radians, (0, 1, 0))
+
+            current_quat = [
+                current_pose.orientation.x,
+                current_pose.orientation.y,
+                current_pose.orientation.z,
+                current_pose.orientation.w,
+            ]
+            new_orientation = tf.quaternion_multiply(rotation_quat, current_quat)
+
+            new_pose = current_pose
+            new_pose.position.x -= 0.3
+            new_pose.orientation.x = new_orientation[0]
+            new_pose.orientation.y = new_orientation[1]
+            new_pose.orientation.z = new_orientation[2]
+            new_pose.orientation.w = new_orientation[3]
+
+            result = self.reach_cartesian_pose(new_pose)
+
+            if result is True:
+                rospy.loginfo("Arm Controller init Complete!")
+
+                self.pregrasp = self.get_joint_angles()
 
     def handle_get_pose(self, req):
 
@@ -66,7 +103,7 @@ class ArmController:
             new_angles[i] += angles[i]
         
         result = self.reach_joint_angles(new_angles)
-        if result is success:
+        if result is True:
             rospy.loginfo("Successfully reach new angles")
         else:
             rospy.loginfo("Cannot reach new angles")
@@ -91,11 +128,16 @@ class ArmController:
 
         result = self.reach_cartesian_pose(new_pose)
 
-        if result is success:
+        if result is True:
             rospy.loginfo("Successfully reach new pose")
         else:
             rospy.loginfo("Cannot reach new pose")
         return
+
+    def reach_pregrasp(self):
+
+        rospy.loginfo("Reaching Pregrasp Pose...")
+        return self.reach_joint_angles(self.pregrasp)
 
     def get_joint_angles(self):
         arm_group = self.arm_group
@@ -163,31 +205,4 @@ class ArmController:
 if __name__ == '__main__':
     arm_controller = ArmController()
 
-    success = arm_controller.is_init_success
-    
-    # From Home Pose to Prepared Pose
-    if success:
-       
-        rospy.loginfo("Reaching Prepared Pose...")
-        current_pose = arm_controller.get_cartesian_pose()
-        angle_radians = 90 * (pi / 180)
-        rotation_quat = tf.quaternion_about_axis(angle_radians, (0, 1, 0))
-
-        current_quat = [
-            current_pose.orientation.x,
-            current_pose.orientation.y,
-            current_pose.orientation.z,
-            current_pose.orientation.w,
-        ]
-        new_orientation = tf.quaternion_multiply(rotation_quat, current_quat)
-
-        new_pose = current_pose
-        new_pose.orientation.x = new_orientation[0]
-        new_pose.orientation.y = new_orientation[1]
-        new_pose.orientation.z = new_orientation[2]
-        new_pose.orientation.w = new_orientation[3]
-
-        arm_controller.reach_cartesian_pose(new_pose)
-    
-    rospy.loginfo("Arm Controller init Complete!")
     rospy.spin()

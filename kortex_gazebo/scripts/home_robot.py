@@ -100,7 +100,7 @@ def main():
     success = False
   
   # For testing purposes
-  rospy.set_param("is_initialized", success)
+  rospy.set_param("gazebo_is_initialized", success)
   if not success:
     rospy.logerr("The Gazebo initialization encountered an error.")
   else:

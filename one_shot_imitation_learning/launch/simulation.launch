@@ -16,10 +16,14 @@
     </include>
 
     <!-- Spawn Kortex Robot -->
+    <arg name="robot_name" value="gen3"/>
     <include file="$(find kortex_gazebo)/launch/spawn_kortex_robot.launch">
             <arg name="start_gazebo" value="false"/>
             <arg name="start_rviz" value="true"/>
-            <arg name="robot_name" value="gen3"/>
+            <arg name="robot_name" value="$(arg robot_name)"/>
             <arg name="gripper" value="robotiq_2f_85"/>
     </include>
+    <group ns="$(arg robot_name)">
+        <node pkg="one_shot_imitation_learning" type="ArmController.py" name="arm_controller" output="screen" />
+    </group>
 </launch>
