@@ -45,6 +45,7 @@ class DatasetGenerator:
         ex = model_pose.position.x - gripper_pose.position.x
         if abs(ex) > DatasetGenerator.TOLERENCE:
             ex *= DatasetGenerator.KP_XYZ
+            ex = round(ex, 4)
             if abs(ex) > DatasetGenerator.MAX_STEP_SIZE:
                 ex = DatasetGenerator.MAX_STEP_SIZE
         else:
@@ -53,6 +54,7 @@ class DatasetGenerator:
         ey = model_pose.position.y - gripper_pose.position.y
         if abs(ey) > DatasetGenerator.TOLERENCE:
             ey *= DatasetGenerator.KP_XYZ
+            ey = round(ey, 4)
             if abs(ey) > DatasetGenerator.MAX_STEP_SIZE:
                 ey = DatasetGenerator.MAX_STEP_SIZE
         else:
@@ -61,6 +63,7 @@ class DatasetGenerator:
         ez = 0.35 - gripper_pose.position.z
         if abs(ez) > DatasetGenerator.TOLERENCE:
             ez *= DatasetGenerator.KP_XYZ
+            ez = round(ez, 4)
             if abs(ez) > DatasetGenerator.MAX_STEP_SIZE:
                 ez = DatasetGenerator.MAX_STEP_SIZE
         else:
@@ -76,13 +79,26 @@ class DatasetGenerator:
                 er = DatasetGenerator.MAX_STEP_SIZE
         else:
             er = 0
+
+        er_cos = np.cos(er)
+        er_cos = round(er_cos, 4)
+        er_sin = np.sin(er)
+        er_sin = round(er_sin, 4)
         
         if (ex == 0) and (ey == 0) and (ez == 0) and (er == 0):
             rospy.loginfo('Reached Goal Pose')
+            # Get Image
+            cv2_image = self.cv_bridge.imgmsg_to_cv2(image, desired_encoding='bgr8')
+            image_name = str(self.index) + '.png'
+            cv2.imwrite(self.DATASET_PATH + image_name, cv2_image)
+
+            labels_name_full_path = self.DATASET_PATH + 'labels.csv'
+            self.labels = np.vstack([self.labels, [image_name, ex, ey, ez, er_cos, er_sin]])
+            np.savetxt(labels_name_full_path, self.labels.astype(str), delimiter=',', fmt='%s')
+            rospy.loginfo(f'Save image: {image_name}, label index: {self.index}')
+            rospy.signal_shutdown('Reached Goal Pose')
             return
         
-        er_cos = np.cos(er)
-        er_sin = np.sin(er)
         rospy.loginfo(f'ex: {ex}, ey: {ey}, ez: {ez}, er: {er}, er_cos: {er_cos}, er_sin: {er_sin}')
 
         # Move Gripper
@@ -107,6 +123,7 @@ class DatasetGenerator:
         displacement.position.z = ez
 
         er = np.arctan2(er_sin, er_cos)
+        rospy.loginfo(f'Moving Angle: {er}')
         eq = tf.quaternion_from_euler(0, 0, er)
         displacement.orientation.x = eq[0]
         displacement.orientation.y = eq[1]

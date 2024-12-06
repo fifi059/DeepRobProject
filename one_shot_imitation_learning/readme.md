@@ -1,6 +1,8 @@
 # Collect Dataset
 
 To collect dataset, first you need to setup the environment using the `table.world` file in the `worlds` folder.
+- For the mug, it should be placed within `0.15 < x < 0.55` & `-0.23 < y < 0.23`
+
 Then run the following code:
 
 1. Run `roslaunch one_shot_imitation_learning simulation.launch` and wait until you see the **message: "Arm Controller init Complete!"**, indicating that the robot has reached the pregrasp position. 
