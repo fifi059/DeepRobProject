@@ -16,7 +16,8 @@ class DatasetGenerator:
     TOLERENCE = 0.01
     KP_XYZ = 0.3
     KP_R = 0.3
-    MAX_STEP_SIZE = 0.05   # Maximum movement stepsize
+    MAX_STEP_SIZE_LINEAR = 0.05   # Maximum linear movement stepsize
+    MAX_STEP_SIZE_ANGULAR = 0.1   # Maximum angular movement stepsize
 
     def __init__(self, trajectory_name, model_name):
         self.index = 0
@@ -46,10 +47,10 @@ class DatasetGenerator:
         if abs(ex) > DatasetGenerator.TOLERENCE:
             ex *= DatasetGenerator.KP_XYZ
             ex = round(ex, 4)
-            if ex > DatasetGenerator.MAX_STEP_SIZE:
-                ex = DatasetGenerator.MAX_STEP_SIZE
-            elif ex < -DatasetGenerator.MAX_STEP_SIZE:
-                ex = -DatasetGenerator.MAX_STEP_SIZE
+            if ex > DatasetGenerator.MAX_STEP_SIZE_LINEAR:
+                ex = DatasetGenerator.MAX_STEP_SIZE_LINEAR
+            elif ex < -DatasetGenerator.MAX_STEP_SIZE_LINEAR:
+                ex = -DatasetGenerator.MAX_STEP_SIZE_LINEAR
         else:
             ex = 0
         
@@ -58,10 +59,10 @@ class DatasetGenerator:
         if abs(ey) > DatasetGenerator.TOLERENCE:
             ey *= DatasetGenerator.KP_XYZ
             ey = round(ey, 4)
-            if ey > DatasetGenerator.MAX_STEP_SIZE:
-                ey = DatasetGenerator.MAX_STEP_SIZE
-            elif ey < -DatasetGenerator.MAX_STEP_SIZE:
-                ey = -DatasetGenerator.MAX_STEP_SIZE
+            if ey > DatasetGenerator.MAX_STEP_SIZE_LINEAR:
+                ey = DatasetGenerator.MAX_STEP_SIZE_LINEAR
+            elif ey < -DatasetGenerator.MAX_STEP_SIZE_LINEAR:
+                ey = -DatasetGenerator.MAX_STEP_SIZE_LINEAR
         else:
             ey = 0
 
@@ -69,10 +70,10 @@ class DatasetGenerator:
         if abs(ez) > DatasetGenerator.TOLERENCE:
             ez *= DatasetGenerator.KP_XYZ
             ez = round(ez, 4)
-            if ez > DatasetGenerator.MAX_STEP_SIZE:
-                ez = DatasetGenerator.MAX_STEP_SIZE
-            elif ez < -DatasetGenerator.MAX_STEP_SIZE:
-                ez = -DatasetGenerator.MAX_STEP_SIZE
+            if ez > DatasetGenerator.MAX_STEP_SIZE_LINEAR:
+                ez = DatasetGenerator.MAX_STEP_SIZE_LINEAR
+            elif ez < -DatasetGenerator.MAX_STEP_SIZE_LINEAR:
+                ez = -DatasetGenerator.MAX_STEP_SIZE_LINEAR
         else:
             ez = 0
 
@@ -82,10 +83,10 @@ class DatasetGenerator:
         er = model_angle - gripper_angle + 1.5708
         if abs(er) > DatasetGenerator.TOLERENCE:
             er *= DatasetGenerator.KP_R
-            if er > DatasetGenerator.MAX_STEP_SIZE:
-                er = DatasetGenerator.MAX_STEP_SIZE
-            elif er < -DatasetGenerator.MAX_STEP_SIZE:
-                er = -DatasetGenerator.MAX_STEP_SIZE
+            if er > DatasetGenerator.MAX_STEP_SIZE_ANGULAR:
+                er = DatasetGenerator.MAX_STEP_SIZE_ANGULAR
+            elif er < -DatasetGenerator.MAX_STEP_SIZE_ANGULAR:
+                er = -DatasetGenerator.MAX_STEP_SIZE_ANGULAR
         else:
             er = 0
 
