@@ -14,10 +14,10 @@ import numpy as np
 class DatasetGenerator:
 
     TOLERENCE = 0.01
-    KP_XYZ = 0.3
-    KP_R = 0.3
-    MAX_STEP_SIZE_LINEAR = 0.05   # Maximum linear movement stepsize
-    MAX_STEP_SIZE_ANGULAR = 0.1   # Maximum angular movement stepsize
+    KP_XYZ = 0.5
+    KP_R = 0.7
+    MAX_STEP_SIZE_LINEAR = 0.1   # Maximum linear movement stepsize
+    MAX_STEP_SIZE_ANGULAR = 0.2   # Maximum angular movement stepsize
 
     def __init__(self, trajectory_name, model_name):
         self.index = 0
