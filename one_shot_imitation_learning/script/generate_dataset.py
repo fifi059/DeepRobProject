@@ -55,7 +55,6 @@ class DatasetGenerator:
             ex = 0
         
         ey = model_pose.position.y - gripper_pose.position.y
-        print(ey)
         if abs(ey) > DatasetGenerator.TOLERENCE:
             ey *= DatasetGenerator.KP_XYZ
             ey = round(ey, 4)
@@ -80,7 +79,7 @@ class DatasetGenerator:
         _, _, gripper_angle = tf.euler_from_quaternion([gripper_pose.orientation.x, gripper_pose.orientation.y, gripper_pose.orientation.z, gripper_pose.orientation.w])
         _, _, model_angle = tf.euler_from_quaternion([model_pose.orientation.x, model_pose.orientation.y, model_pose.orientation.z, model_pose.orientation.w])
 
-        er = model_angle - gripper_angle + 1.5708
+        er = (model_angle - gripper_angle + 1.5708) % np.pi
         if abs(er) > DatasetGenerator.TOLERENCE:
             er *= DatasetGenerator.KP_R
             if er > DatasetGenerator.MAX_STEP_SIZE_ANGULAR:
