@@ -111,7 +111,7 @@
     <include>
         <uri>https://fuel.gazebosim.org/GoogleResearch/models/Threshold_Porcelain_Coffee_Mug_All_Over_Bead_White</uri>
         <!-- <uri>https://fuel.gazebosim.org/1.0/GoogleResearch/models/Ecoforms_Plant_Saucer_SQ1HARVEST</uri> -->
-        <pose>0.55 -0.03 1.02 0 0 0.0</pose> <!-- Adjust position and rotation as needed -->
+        <pose>0.4 0.15 1.02 0 0 -1.1</pose> <!-- Adjust position and rotation as needed -->
     </include>
 
     <!-- Coke Can -->
