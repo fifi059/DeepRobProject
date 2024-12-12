@@ -79,7 +79,8 @@ class DatasetGenerator:
         _, _, gripper_angle = tf.euler_from_quaternion([gripper_pose.orientation.x, gripper_pose.orientation.y, gripper_pose.orientation.z, gripper_pose.orientation.w])
         _, _, model_angle = tf.euler_from_quaternion([model_pose.orientation.x, model_pose.orientation.y, model_pose.orientation.z, model_pose.orientation.w])
 
-        er = model_angle - gripper_angle + 1.5708
+        # er = model_angle - gripper_angle + 1.5708
+        er = model_angle - gripper_angle
         er = (er + np.pi) % (2 * np.pi) - np.pi
         if abs(er) > DatasetGenerator.TOLERENCE:
             er *= DatasetGenerator.KP_R
@@ -148,7 +149,8 @@ if __name__ == '__main__':
     rospy.init_node('generate_dataset')
 
     trajectory_name = input('Trajectory_name: ')
-    model_name = 'Threshold_Porcelain_Coffee_Mug_All_Over_Bead_White'
+    # model_name = 'Threshold_Porcelain_Coffee_Mug_All_Over_Bead_White'
+    model_name = 'phone'
 
     dataset_generator = DatasetGenerator(trajectory_name, model_name)
     rospy.spin()

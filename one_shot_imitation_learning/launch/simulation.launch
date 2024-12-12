@@ -3,7 +3,7 @@
     <!-- Gazebo parameters -->
     <arg name="use_sim_time" default="true"/>
     <arg name="debug" default="false" />
-    <arg name="gui" default="true" />
+    <arg name="gui" default="false" />
     <arg name="paused" default="true" />
 
     <!-- Launch Gazebo with an empty world -->
