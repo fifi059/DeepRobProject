@@ -111,7 +111,7 @@
     <!-- Mug -->
     <include>
         <uri>https://fuel.gazebosim.org/GoogleResearch/models/Threshold_Porcelain_Coffee_Mug_All_Over_Bead_White</uri>
-        <pose>0.22 -0.09 1.02 0 0 -0.9</pose>
+        <pose>0.17	0.05 1.02 0 0 0.4</pose>
     </include>
 
     <!-- Phone -->
@@ -122,11 +122,11 @@
     </include> -->
 
     <!-- Coke Can -->
-    <include>
+    <!-- <include>
       <name>can1</name>
       <uri>model://coke_can</uri>
-      <pose>0.45 0.14 1.02 0 0 0</pose> 
-    </include>
+      <pose>0.45 -0.14 1.02 0 0 0</pose> 
+    </include> -->
 
     <!-- <include>
       <name>can2</name>
