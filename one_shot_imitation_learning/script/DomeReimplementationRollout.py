@@ -8,15 +8,15 @@ from gazebo_msgs.srv import GetModelState
 from one_shot_imitation_learning.srv import GetPose
 import tf.transformations as tf
 from network.UNetWithTilingAndFiLM import UNetWithTilingAndFiLM
-from network.visual_servoing_networks import SiameseExEy, SiameseEz, SiameseEr
+from network.DomeReimplementation import DomeReimplementation
 from PIL import Image as PILImage
 from torchvision import transforms
 import numpy as np
 
 class DomeReimplementationRollout:
     
-    TOLERENCE_LINEAR = 0.01
-    TOLERENCE_ANGULAR = 0.02
+    TOLERENCE_LINEAR = 2e-3
+    TOLERENCE_ANGULAR = 2e-3
     MAX_STEP_SIZE_LINEAR = 0.1   # Maximum linear movement stepsize
     MAX_STEP_SIZE_ANGULAR = 0.2   # Maximum angular movement stepsize
     transform = transforms.Compose([
@@ -25,37 +25,22 @@ class DomeReimplementationRollout:
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     ])
 
-    def __init__(self, weight_path_seg, weight_path_exey, weight_path_ez, weight_path_er, bottleneck_image_path, target_model_name, device):
-
-        # Segmentation Network
-        self.segmentation_network = UNetWithTilingAndFiLM().to(device)
-        self.segmentation_network.load_state_dict(torch.load(weight_path_seg, weights_only=True))
-        self.segmentation_network.eval()
-
-        # Visual Servoing Network
-        self.visual_servoing_network_exey = SiameseExEy().to(device)
-        self.visual_servoing_network_exey.load_state_dict(torch.load(weight_path_exey, weights_only=True))
-        self.visual_servoing_network_exey.eval()
-        self.visual_servoing_network_ez = SiameseEz().to(device)
-        self.visual_servoing_network_ez.load_state_dict(torch.load(weight_path_ez, weights_only=True))
-        self.visual_servoing_network_ez.eval()
-        self.visual_servoing_network_er = SiameseEr().to(device)
-        self.visual_servoing_network_er.load_state_dict(torch.load(weight_path_er, weights_only=True))
-        self.visual_servoing_network_er.eval()
+    def __init__(self, weight_path_Dome, bottleneck_image_path, target_model_name, device):
 
         # Bottleneck Image
         pil_bottleneck_image = PILImage.open(bottleneck_image_path).convert('RGB')
         self.bottleneck_image = DomeReimplementationRollout.transform(pil_bottleneck_image).unsqueeze(0).to(device)
-        output = self.segmentation_network(self.bottleneck_image, self.bottleneck_image)
-        self.bottleneck_segmentation = (output > 0.5).to(torch.float32)
-        self.bottleneck_segmentation *= 255
+
+        # End-to-end Network
+        self.network = DomeReimplementation(self.bottleneck_image).to(device)
+        self.network.load_state_dict(torch.load(weight_path_Dome, weights_only=True))
+        self.network.eval()
+        self.device = device
 
         # Save the image for debugging
-        # debug_bottleneck_segmentation = self.bottleneck_segmentation.squeeze(0).to(torch.uint8)
-        # pil_image = transforms.ToPILImage()(debug_bottleneck_segmentation)
-        # pil_image.save("/root/deeprob_project_ws/src/DeepRobProject/one_shot_imitation_learning/script/bottleneck_segmentation.png")
-        
-        self.device = device
+        debug_bottleneck_segmentation = self.network.bottleneck_segmentation.squeeze(0).to(torch.uint8)
+        pil_image = transforms.ToPILImage()(debug_bottleneck_segmentation)
+        pil_image.save("/root/deeprob_project_ws/src/DeepRobProject/one_shot_imitation_learning/script/bottleneck_segmentation.png")
         
         # ROS
         self.target_model_name = target_model_name
@@ -75,34 +60,24 @@ class DomeReimplementationRollout:
         print('image callback')
         cv2_image = self.cv_bridge.imgmsg_to_cv2(image, desired_encoding='rgb8')
         pil_image = PILImage.fromarray(cv2_image)
-
         live_image = DomeReimplementationRollout.transform(pil_image).unsqueeze(0).to(self.device)
+
         with torch.no_grad():
-            output = self.segmentation_network(live_image, self.bottleneck_image)
-            live_segmentation = (output > 0.5).to(torch.float32)
-            live_segmentation *= 255
+            output, live_segmentation = self.network(live_image)
 
             # Save the image for debugging
             debug_live_segmentation = live_segmentation.squeeze(0).to(torch.uint8)
             pil_image = transforms.ToPILImage()(debug_live_segmentation)
             pil_image.save("/root/deeprob_project_ws/src/DeepRobProject/one_shot_imitation_learning/script/live_segmentation.png")
-        
-            # Testing 
-            # pil_live_seg = PILImage.open('/root/deeprob_project_ws/src/DeepRobProject/one_shot_imitation_learning/script/live_segmentation.png')
-            # live_segmentation = transforms.ToTensor()(pil_live_seg).unsqueeze(0).to(self.device)
-            # pil_bot_seg = PILImage.open('/root/deeprob_project_ws/src/DeepRobProject/one_shot_imitation_learning/script/bottleneck_segmentation.png')
-            # self.bottleneck_segmentation = transforms.ToTensor()(pil_bot_seg).unsqueeze(0).to(self.device)
 
-            output = self.visual_servoing_network_exey(live_segmentation, self.bottleneck_segmentation)
+
             ex = output[0][0].item()
             ey = output[0][1].item()
-            output = self.visual_servoing_network_ez(live_segmentation, self.bottleneck_segmentation)
-            ez = output[0][0].item()
-            output = self.visual_servoing_network_er(live_segmentation, self.bottleneck_segmentation)
-            er_cos = output[0][0].item()
-            er_sin = output[0][1].item()
+            ez = output[0][2].item()
+            er_cos = output[0][3].item()
+            er_sin = output[0][4].item()
 
-        print(ex, ey, ez)
+        print(ex, ey, ez, er_cos, er_sin)
         self.move_gripper(ex, ey, ez, er_cos, er_sin)
 
     def move_gripper(self, ex, ey, ez, er_cos, er_sin):
@@ -177,12 +152,12 @@ class DomeReimplementationRollout:
 
             er = abs(model_angle - gripper_angle + 1.5708)
 
-            if (ex < 0.05) and (ey < 0.05) and (ez < 0.05):
+            if (ex < 0.06) and (ey < 0.06) and (ez < 0.06):
                 rospy.loginfo(f'Translation Success! ex: {ex}, ey: {ey}, ez: {ez}')
             else:
                 rospy.loginfo(f'Translation Fail: ex: {ex}, ey: {ey}, ez: {ez}')
 
-            if er < 0.05:
+            if er < 0.1:
                 rospy.loginfo(f'Rotation Success! er:{er}')
             else:
                 rospy.loginfo(f'Rotation Fail: er:{er}')
@@ -193,17 +168,12 @@ if __name__ == '__main__':
 
     weight_path_seg = rospkg.RosPack().get_path('one_shot_imitation_learning') + '/script/network/weights/' + 'seg.pth'
     # weight_path_seg = rospkg.RosPack().get_path('one_shot_imitation_learning') + '/script/network/weights/' + 'seg_one-shot.pth'
-    weight_path_exey = rospkg.RosPack().get_path('one_shot_imitation_learning') + '/script/network/weights/' + 'exey.pth'
-    weight_path_ez = rospkg.RosPack().get_path('one_shot_imitation_learning') + '/script/network/weights/' + 'ez.pth'
-    weight_path_er = rospkg.RosPack().get_path('one_shot_imitation_learning') + '/script/network/weights/' + 'er.pth'
+    weight_path_Dome = rospkg.RosPack().get_path('one_shot_imitation_learning') + '/script/network/weights/' + 'dome.pth'
     bottleneck_image_path = rospkg.RosPack().get_path('one_shot_imitation_learning') + '/script/network/' + 'bottleneck.png'
 
     # ROS init
     rospy.init_node('dome_reimplementation')
-    imitation_netwrok = DomeReimplementationRollout(weight_path_seg, 
-                                             weight_path_exey, 
-                                             weight_path_ez, 
-                                             weight_path_er, 
+    imitation_netwrok = DomeReimplementationRollout(weight_path_Dome,
                                              bottleneck_image_path, target_model_name='Threshold_Porcelain_Coffee_Mug_All_Over_Bead_White', device='cuda')
 
     rospy.spin()
