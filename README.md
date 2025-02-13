@@ -1,6 +1,7 @@
 ## One-Shot Imitation Learning Reimplementation of DOME paper
 
 * **Environment and dataset collection:**
+  - A total of 120 trajectory episodes were recorded using a Kinova arm in the ROS Gazebo simulation.
 
 ![til](https://github.com/fifi059/DeepRobProject/blob/master/Dataset%20Collection.gif)
 
