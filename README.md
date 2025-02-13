@@ -1,7 +1,7 @@
 ## One-Shot Imitation Learning Reimplementation of DOME paper
 
 **Environment and dataset collection:**
-![til](Dataset Collection.gif)
+![til](https://github.com/fifi059/DeepRobProject/blob/master/Dataset%20Collection.gif)
 
 
 **References:**
