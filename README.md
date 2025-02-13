@@ -4,7 +4,9 @@
   
   - A total of 120 trajectory episodes were recorded using a Kinova arm in the ROS Gazebo simulation.
 
-         ![til](https://github.com/fifi059/DeepRobProject/blob/master/Dataset%20Collection.gif)
+<p align="center">
+    <img src="https://github.com/fifi059/DeepRobProject/blob/master/Dataset%20Collection.gif" alt="til">
+</p>
 
 * **Success Case - Zero-shot model:**
 
