@@ -1,7 +1,7 @@
 ## One-Shot Imitation Learning Reimplementation of DOME paper
 
 **Environment and dataset collection:**
-![Alt Text](Dataset Collection.gif)
+![til](Dataset Collection.gif)
 
 
 **References:**
