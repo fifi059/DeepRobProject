@@ -1,4 +1,4 @@
-## One-Shot Imitation Learning Reimplementation of DOME paper
+## One-Shot Imitation Learning - Reimplementation of DOME paper
 
 * **Environment and dataset collection:**
   
